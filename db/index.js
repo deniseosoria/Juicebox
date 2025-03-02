@@ -10,15 +10,6 @@ const client = new Client({
   ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
 });
 
-// const client = new Client({
-//   user: "postgres",
-//   password: "Vivalajuicy04$",  // Manually set password
-//   host: "localhost",
-//   port: 5432,
-//   database: "acme_juicebox_db",
-// });
-
-
 /**
  * USER Methods
  */
