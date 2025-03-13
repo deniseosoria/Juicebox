@@ -1,5 +1,7 @@
 const { Client } = require('pg') // imports the pg module
 require('dotenv').config({ path: './.env' });
+const bcrypt = require("bcrypt");
+const SALT_ROUNDS = 10;
 
 const client = new Client({
   user: process.env.DB_USER,
@@ -21,15 +23,25 @@ async function createUser({
   location
 }) {
   try {
+    if (!password) {
+      throw new Error("Password is missing in createUser");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+    console.log("Hashed password:", hashedPassword);
+
     const { rows: [ user ] } = await client.query(`
       INSERT INTO users(username, password, name, location) 
       VALUES($1, $2, $3, $4) 
       ON CONFLICT (username) DO NOTHING 
       RETURNING *;
-    `, [username, password, name, location]);
+    `, [username, hashedPassword, name, location]);
+
+    console.log("User created:", user);
 
     return user;
   } catch (error) {
+    console.error("Error in createUser:", error);
     throw error;
   }
 }
